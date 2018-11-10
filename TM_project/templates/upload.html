@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    {% if files %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Tekst</th>
+                <th scope="col">Grafika</th>
+                <th scope="col">Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+                <tr>
+                    <td>{{file.pic_text}}</td>
+                    <td><a href="{{ file.get_absolute_url }}"><img class="thumb" src="{{ file.get_absolute_url }}" alt="{{ file.pic_text }}"></a></td>
+                    <td><a href="{% url 'delete' file.id %}">Usuń</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="alerts">
+            <div class="alert alert-info">Brak wgranych obrazów</div>
+        </div>
+    {% endif %}
+
+    <form action="{{ request.build_absolute_uri }}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="pic_text">Tekst</label>
+        <input class="form-control-sm" type="text" id="pic_text" name="pic_text" required/>
+        
+        <label for="pic">Grafika</label>
+        <input class="form-control-sm" type="file" id="pic" name="pic" required/>
+        <br>
+        
+        <input type="submit" class="btn btn-primary" value="Upload" />
+    </form>
+{% endblock content %}

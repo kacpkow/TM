@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    Liczba aktualnie dodanych przez Ciebie plików: {{upload_counter}}
+    <br>
+    By dodać nowe pliki lub zobaczyć istniejące przejdź do zakładki "Dodaj pliki"
+{% else %}
+    Witaj gościu!
+    <br>
+    Nie jesteś zalogowany. Zaloguj się lub skorzystaj z rejestracji by skorzystać z funkcjonalności
+{% endif %}
+{% endblock content %}

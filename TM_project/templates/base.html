@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <title>{{title}}</title>
+
+    <!-- Jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">Technologie Mobilne</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'upload' %}">Dodaj pliki</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Wyloguj</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Zaloguj</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <span class="navbar-text">
+                    {% if user.is_authenticated %}
+                        Witaj <b>{{ user.username }}</b>!
+                    {% else %}
+                        <a href="{% url 'register' %}">Zarejestruj</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <ul class="alerts">
+            {% for message in messages %}
+            <li {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="container">
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="text-center">
+            &copy;  Anna Kocztorz, Kacper Kowalik
+            <br>
+            2018
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+        <script>
+            (function () {
+                setTimeout(function () {
+                    window.location.href = "/logout";
+                }, 10 * 60 * 1000);
+            })();
+        </script>
+    {% endif %}
+
+    <script>
+        $('input, textarea').addClass('form-control')
+    </script>
+</body>
+</html>

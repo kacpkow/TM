@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="alerts">
+        <div class="alert alert-danger">
+            Brak uprawnień, przejdź do <a href="{% url 'login' %}">logowania</a>
+        </div>
+    </div>
+{% endblock content %}
