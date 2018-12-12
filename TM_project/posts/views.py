@@ -36,7 +36,8 @@ def upload_file(request):
 
 
 def home(request):
-    upload_counter = len(Upload.objects.select_related().filter(author_id=request.user.id))
+    upload_counter = len(
+        Upload.objects.select_related().filter(author_id=request.user.id))
     return render(
         request,
         'index.html',
@@ -64,6 +65,12 @@ def delete(request, id):
     except Upload.DoesNotExist:
         messages.error(
             request, 'Nastąpiła próba usunięcia pliku, który nie istnieje')
+    posts = Upload.objects.all()
+    if len(posts) != 0:
+        post = Upload.objects.get(pk=posts[0].pk)
+        print(post.timestamp)
+        post.timestamp = timezone.now()
+        post.save()
 
     return redirect('upload')
 
@@ -96,7 +103,8 @@ def register(request):
 
 
 def get_image_urls(request):
-    raw_data = serializers.serialize('python', Upload.objects.all(), fields=('pic_text', 'pic', 'author',))
+    raw_data = serializers.serialize(
+        'python', Upload.objects.all(), fields=('pic_text', 'pic', 'author',))
     actual_data = [d['fields'] for d in raw_data]
     output = json.dumps(actual_data, separators=(',', ':'))
     return HttpResponse(output, content_type='application/json')
