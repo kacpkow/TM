@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,8 +28,8 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private OkHttpClient client = new OkHttpClient();
-    //private final static String portalUrl = "http://10.0.2.2:8000/";
-    private final static String portalUrl = "http://68.183.211.204:8000/";
+    //private final static String portalUrl = "http://10.0.2.2:8000/";          //do potestowania na emulatorze i localhoście
+    private final static String portalUrl = "http://68.183.211.204:8000/";      //do potestowania na fizycznym urządzeniu
     private List<Image> imgList;
     private List<User> usersList;
     private ImageView imageView;
@@ -53,18 +52,76 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        handler.post(runnableCode);
+        handlerLatest.post(checkLatestHandler);
         handlerSwitchImage.post(switchImage);
     }
 
-    Handler handler = new Handler();
-    private Runnable runnableCode = new Runnable() {
+    private Handler handlerLatest = new Handler();
+    private Runnable checkLatestHandler = new Runnable() {
         @Override
         public void run() {
             pingLatestUrl();
-            handler.postDelayed(this, 2000);
+            handlerLatest.postDelayed(this, 2000);
         }
     };
+
+    private Handler handlerSwitchImage = new Handler();
+    private Runnable switchImage = new Runnable() {
+        @Override
+        public void run() {
+            showNextImage();
+            handlerSwitchImage.postDelayed(this, 10000);
+        }
+    };
+
+    private void compareTimestamps() throws IOException {
+        if(!currentTimestamp.equals(newTimestamp)){
+            loadImages();
+            getUsersList();
+            currentTimestamp = newTimestamp;
+        }
+    }
+
+    private void loadImages() throws IOException {
+        Request request = new Request.Builder()
+                .url(portalUrl + "images/")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String jsonResponse = response.body().string();
+                final Gson gson = new Gson();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (jsonResponse != null) {
+                            Gson objGson = new GsonBuilder().setLenient().create();
+                            Type listType = new TypeToken<List<Image>>() {
+                            }.getType();
+
+                            try {
+                                List<Image> readFromJson = objGson.fromJson(jsonResponse, listType);
+                                if (readFromJson != null) {
+                                    Image[] imgArray = gson.fromJson(jsonResponse, Image[].class);
+                                    imgList = Arrays.asList(imgArray);
+                                }
+
+                            } catch (JsonSyntaxException e) {
+                                Log.e("error", "error in syntax in returning json");
+                            }
+                        }
+
+                    }
+                });
+            }
+        });
+    }
 
     private void pingLatestUrl() {
         Request request = new Request.Builder()
@@ -79,13 +136,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                final String yourResponse = response.body().string();
-                final Gson gson = new Gson();
+                final String jsonResponse = response.body().string();
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (yourResponse != null) {
-                            JsonObject jsonObject = new Gson().fromJson(yourResponse, JsonObject.class);
+                        if (jsonResponse != null) {
+                            JsonObject jsonObject = new Gson().fromJson(jsonResponse, JsonObject.class);
                             newTimestamp = jsonObject.get("timestamp").toString();
                             try {
                                 compareTimestamps();
@@ -112,20 +168,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                final String yourResponse = response.body().string();
+                final String jsonResponse = response.body().string();
                 final Gson gson = new Gson();
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (yourResponse != null) {
+                        if (jsonResponse != null) {
                             Gson objGson = new GsonBuilder().setLenient().create();
                             Type listType = new TypeToken<List<User>>() {
                             }.getType();
 
                             try {
-                                List<User> readFromJson = objGson.fromJson(yourResponse, listType);
+                                List<User> readFromJson = objGson.fromJson(jsonResponse, listType);
                                 if (readFromJson != null) {
-                                    User[] userArray = gson.fromJson(yourResponse, User[].class);
+                                    User[] userArray = gson.fromJson(jsonResponse, User[].class);
                                     usersList = Arrays.asList(userArray);
                                 }
 
@@ -133,73 +189,11 @@ public class MainActivity extends AppCompatActivity {
                                 Log.e("error", "error in syntax in returning json");
                             }
                         }
-
-                        Log.e("user", usersList.get(0).getFields().getFirst_name());
-
                     }
                 });
             }
         });
     }
-
-    private void compareTimestamps() throws IOException {
-        if(!currentTimestamp.equals(newTimestamp)){
-            Log.e("loading", "new images");
-            loadImages();
-            getUsersList();
-            currentTimestamp = newTimestamp;
-        }
-    }
-
-    private void loadImages() throws IOException {
-        Request request = new Request.Builder()
-                .url(portalUrl + "images/")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final String yourResponse = response.body().string();
-                final Gson gson = new Gson();
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (yourResponse != null) {
-                            Gson objGson = new GsonBuilder().setLenient().create();
-                            Type listType = new TypeToken<List<Image>>() {
-                            }.getType();
-
-                            try {
-                                List<Image> readFromJson = objGson.fromJson(yourResponse, listType);
-                                if (readFromJson != null) {
-                                    Image[] imgArray = gson.fromJson(yourResponse, Image[].class);
-                                    imgList = Arrays.asList(imgArray);
-                                }
-
-                            } catch (JsonSyntaxException e) {
-                                Log.e("error", "error in syntax in returning json");
-                            }
-                        }
-
-                    }
-                });
-            }
-        });
-    }
-
-    Handler handlerSwitchImage = new Handler();
-    private Runnable switchImage = new Runnable() {
-        @Override
-        public void run() {
-            showNextImage();
-            handlerSwitchImage.postDelayed(this, 10000);
-        }
-    };
 
     private void showNextImage() {
         if(imgList != null && imgList.size() != 0){
