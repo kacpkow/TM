@@ -1,0 +1,10 @@
+1) python manage.py makemigrations
+2) python manage.py migrate
+3) python manage.py createsuperuser
+4) python manage.py runserver
+
+Ogólnie pomys³ jest taki, ¿e aplikacja mobilna pinguje cyklicznie stronê /latest na przyk³ad co 1 minutê,
+w odpowiedzi dostaje timestamp ostatniej modyfikacji bazy zdjêæ ze zdjêciami. Kiedy
+oka¿e siê, ¿e ten przechowywany w aplikacji ró¿ni siê od otrzymanego to idzie GET request pod 
+adres /images, gdzie aplikacja wystawia JSONy, które zawieraj¹ œcie¿kê wzglêdn¹ do zdjêcia
+oraz nazwê u¿ytkownika, które dane zdjêcie zuploadowa³.

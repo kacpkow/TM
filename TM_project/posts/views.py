@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
+import json
 
 
 @login_required(login_url='/not_allowed')
@@ -67,13 +68,6 @@ def delete(request, id):
     return redirect('upload')
 
 
-def get_usernames(request):
-    users = User.objects.all()
-    jsondata = serializers.serialize(
-        'json', users, fields=('username', 'email',))
-    return HttpResponse(jsondata, content_type='application/json')
-
-
 def get_latest(request):
     posts = Upload.objects.all()
     if len(posts) == 0:
@@ -102,6 +96,13 @@ def register(request):
 
 
 def get_image_urls(request):
-    posts = Upload.objects.all()
-    jsondata = serializers.serialize('json', posts, fields=('pic',))
+    raw_data = serializers.serialize('python', Upload.objects.all(), fields=('pic_text', 'pic', 'author',))
+    actual_data = [d['fields'] for d in raw_data]
+    output = json.dumps(actual_data, separators=(',', ':'))
+    return HttpResponse(output, content_type='application/json')
+
+
+def get_usernames(request):
+    jsondata = serializers.serialize(
+        'json', User.objects.all(), fields=('first_name', 'last_name', 'email',))
     return HttpResponse(jsondata, content_type='application/json')
