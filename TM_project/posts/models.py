@@ -18,25 +18,9 @@ def upload_location(instance, filename):
 class Upload(models.Model):
     pic_text = models.TextField()
     pic = models.ImageField(upload_to=upload_location)
-    author = models.ForeignKey(User, on_delete='cascade', null=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     timestamp = models.TextField()
 
     @property
     def get_absolute_url(self):
         return "{0}{1}".format(settings.MEDIA_URL, self.pic)
-
-
-class Person(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_activated = models.BooleanField(default=False)
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Person.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.person.save()

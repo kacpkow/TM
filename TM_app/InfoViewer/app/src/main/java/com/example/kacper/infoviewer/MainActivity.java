@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private List<User> usersList;
     private ImageView imageView;
     private TextView authorName;
+    private TextView authorNameLabel;
+    private TextView infoTextView;
 
     private String newTimestamp = "";
     private String currentTimestamp = "";
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         imageView = (ImageView)findViewById(R.id.image);
         authorName = (TextView) findViewById(R.id.author_name_text_view);
+        authorNameLabel = (TextView) findViewById(R.id.author_name_text_view_label);
+        infoTextView = (TextView) findViewById(R.id.info_text_view);
 
         try {
             loadImages();
@@ -197,11 +202,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void showNextImage() {
         if(imgList != null && imgList.size() != 0){
+            infoTextView.setVisibility(View.GONE);
+            imageView.setVisibility(View.VISIBLE);
+            authorNameLabel.setVisibility(View.VISIBLE);
+            authorName.setVisibility(View.VISIBLE);
             if(!(currentImageIndex < imgList.size())){
                 currentImageIndex = 0;
             }
             RequestOptions options = new RequestOptions()
-                    .skipMemoryCache(true)
+                    //.skipMemoryCache(true)
                     .centerInside();
 
             if(!this.isDestroyed()){
@@ -220,6 +229,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             currentImageIndex ++;
+        }
+        else{
+            infoTextView.setVisibility(View.VISIBLE);
+            imageView.setVisibility(View.GONE);
+            authorNameLabel.setVisibility(View.GONE);
+            authorName.setVisibility(View.GONE);
         }
     }
 }

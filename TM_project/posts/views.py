@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from posts.forms import UploadFileForm, SignupForm
 from django.conf import settings
 from django.contrib import messages
-from posts.models import Upload, Person
+from posts.models import Upload
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -92,9 +92,8 @@ def register(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
+            user.is_active = False
             user.save()
-            person = Person(user_id=user.id, is_activated=False)
-            person.save()
             messages.success(request, 'Twoje konto oczekuje na aktywację')
             return render(request, 'index.html', {'title': 'Strona domowa', })
     else:

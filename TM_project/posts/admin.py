@@ -1,9 +1,9 @@
 from django.contrib import admin
-from posts.models import Upload, Person
+from posts.models import Upload
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-
+"""
 class PersonInline(admin.StackedInline):
     model = Person
     can_delete = False
@@ -21,7 +21,6 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(User, CustomUserAdmin)"""
 
 admin.site.register(Upload)
-admin.site.register(Person)

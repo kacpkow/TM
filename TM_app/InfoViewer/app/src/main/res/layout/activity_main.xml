@@ -7,6 +7,15 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/info_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:text="Brak obrazów w serwisie"
+        android:layout_gravity="center"
+        android:gravity="center" />
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
