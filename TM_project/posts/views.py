@@ -18,11 +18,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
-    HTTP_200_OK
+    HTTP_200_OK,
+    HTTP_201_CREATED
 )
 from rest_framework.response import Response
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from posts import serializers
+from rest_framework.renderers import JSONRenderer
 
 @csrf_exempt
 @api_view(["POST"])
@@ -40,8 +43,27 @@ def api_login(request):
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key},
                     status=HTTP_200_OK)
-    
 
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def api_register(request):
+    VALID_USER_FIELDS = [f.name for f in User._meta.fields]
+    DEFAULTS = {
+        # you can define any defaults that you would like for the user, here
+    }
+    serialized = serializers.UserSerializer(data=request.data)
+    if serialized.is_valid():
+        user_data = {field: data for (field, data) in request.data.items() if field in VALID_USER_FIELDS}
+        user_data.update(DEFAULTS)
+        user = User.objects.create_user(
+            **user_data
+        )
+        user.is_active = False
+        user.save()
+        return Response(serializers.UserSerializer(instance=user).data, status=HTTP_201_CREATED)
+    else:
+        return Response(serialized._errors, status=HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
 def api_logout(request):
@@ -144,13 +166,19 @@ def get_image_urls(request):
     output = json.dumps(actual_data, separators=(',', ':'))
     return HttpResponse(output, content_type='application/json')
 
+@csrf_exempt
 @api_view(["GET"])
-def api_get_image_urls(request):
-    raw_data = serializers.serialize(
-        'python', Upload.objects.all(), fields=('pic_text', 'pic', 'author',))
-    actual_data = [d['fields'] for d in raw_data]
-    output = json.dumps(actual_data, separators=(',', ':'))
-    return HttpResponse(output, content_type='application/json')
+def api_get_user_image_urls(request):
+    objects = Upload.objects.select_related().filter(author_id=request.user.id)
+    serializer = serializers.UploadSerializer(objects, many=True)
+    return Response({"images": serializer.data})
+
+@csrf_exempt
+@api_view(["GET"])
+def api_get_users(request):
+    objects = User.objects.all()
+    serializer = serializers.UserSerializer(objects, many=True)
+    return Response({"users": serializer.data})
 
 
 def get_usernames(request):

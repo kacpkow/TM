@@ -1,6 +1,6 @@
 from django import forms
 from posts.models import Upload
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
 
@@ -9,8 +9,20 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2')
+        fields = ('username','email', 'password')
+
+    def signup(self, request, user):
+        user.username = self.cleaned_data['username']
+        user.password = self.cleaned_data['password']
+        user.email= self.cleaned_data['email']
+        user.is_active = False
+        user.save()
+
+class UserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = User
+        fields = UserChangeForm.Meta.fields
 
 
 class UploadFileForm(forms.ModelForm):

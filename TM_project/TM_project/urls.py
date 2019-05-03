@@ -35,7 +35,9 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/login/', views.api_login),
     path('api/logout/', views.api_logout),
-    path('api/images/', views.api_get_image_urls, name='images_api'),
+    path('api/register/', views.api_register),
+    path('api/images/', views.api_get_user_image_urls, name='images_api'),
+    path('api/users/', views.api_get_users, name='users_api')
 ]
 
 if settings.DEBUG:
