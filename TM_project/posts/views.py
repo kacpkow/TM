@@ -19,13 +19,16 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_200_OK,
-    HTTP_201_CREATED
+    HTTP_201_CREATED,
+    HTTP_202_ACCEPTED,
+    HTTP_204_NO_CONTENT
 )
 from rest_framework.response import Response
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from posts import serializers
 from rest_framework.renderers import JSONRenderer
+from django.contrib.auth.hashers import make_password
 
 @csrf_exempt
 @api_view(["POST"])
@@ -41,7 +44,8 @@ def api_login(request):
         return Response({'error': 'Invalid Credentials'},
                         status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key},
+    is_staff = user.is_staff
+    return Response({'token': token.key, 'is_staff': is_staff },
                     status=HTTP_200_OK)
 
 @csrf_exempt
@@ -92,6 +96,30 @@ def upload_file(request):
         form = UploadFileForm()
     return render(request, 'upload.html', {'form': form, 'files': files, 'title': 'Upload'})
 
+@csrf_exempt
+@api_view(["POST"])
+def api_upload_image(request):
+    VALID_UPLOAD_FIELDS = [f.name for f in Upload._meta.fields]
+    DEFAULTS = {
+
+    }
+    serialized = serializers.UploadSerializer(data=request.data)
+    print(serialized)
+    if serialized.is_valid():
+        upload_data = {field: data for (field, data) in request.data.items() if field in VALID_UPLOAD_FIELDS}
+        upload_data.update(DEFAULTS)
+        upload = Upload.objects.create(
+            **upload_data
+        )
+        print("is valid")
+        upload.author = request.user
+        upload.timestamp = timezone.now()
+        upload.save()
+        return Response(serializers.UploadSerializer(instance=upload).data, status=HTTP_201_CREATED)
+    else:
+        return Response(serialized._errors, status=HTTP_400_BAD_REQUEST)
+
+
 
 def home(request):
     upload_counter = len(
@@ -131,6 +159,24 @@ def delete(request, id):
         post.save()
 
     return redirect('upload')
+
+@csrf_exempt
+@api_view(["DELETE"])
+def api_delete_image(request):
+    print(request.data)
+    id = request.data.get("id")
+    try:
+        file = Upload.objects.get(pk=id)
+        file.delete()
+    except Upload.DoesNotExist:
+        return Response(status=HTTP_400_BAD_REQUEST)
+    posts = Upload.objects.all()
+    if len(posts) != 0:
+        post = Upload.objects.get(pk=posts[0].pk)
+        print(post.timestamp)
+        post.timestamp = timezone.now()
+        post.save()
+    return Response(status=HTTP_204_NO_CONTENT)
 
 
 def get_latest(request):
@@ -175,11 +221,44 @@ def api_get_user_image_urls(request):
 
 @csrf_exempt
 @api_view(["GET"])
+def api_get_user_latest_image_urls(request):
+    objects = Upload.objects.select_related().filter(author_id=request.user.id).order_by('-id')[:3]
+    serializer = serializers.UploadSerializer(objects, many=True)
+    return Response({"images": serializer.data})
+
+@csrf_exempt
+@api_view(["GET"])
 def api_get_users(request):
     objects = User.objects.all()
     serializer = serializers.UserSerializer(objects, many=True)
     return Response({"users": serializer.data})
 
+@csrf_exempt
+@api_view(["GET"])
+def api_get_user(request):
+    objects = User.objects.select_related().filter(id = request.user.id)
+    serializer = serializers.UserSerializer(objects, many=True)
+    return Response({"user": serializer.data})
+
+@csrf_exempt
+@api_view(["PUT"])
+def api_change_user_values(request):
+    VALID_USER_FIELDS = [f.name for f in User._meta.fields]
+    DEFAULTS = {
+        # you can define any defaults that you would like for the user, here
+    }
+    serialized = serializers.UserSerializer(data=request.data)
+    if serialized.is_valid():
+        user_data = {field: data for (field, data) in request.data.items() if field in VALID_USER_FIELDS}
+        user_data.update(DEFAULTS)
+        user = User.objects.get(id = request.user.id)
+        user.username = request.data.get("username")
+        user.email = request.data.get("email")
+        user.password = make_password(request.data.get("password"), salt=None, hasher='default')
+        user.save()
+        return Response(serializers.UserSerializer(instance=user).data, status=HTTP_202_ACCEPTED)
+    else:
+        return Response(serialized._errors, status=HTTP_400_BAD_REQUEST)
 
 def get_usernames(request):
     jsondata = serializers.serialize(

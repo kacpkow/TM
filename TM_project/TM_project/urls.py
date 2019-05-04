@@ -37,7 +37,12 @@ urlpatterns = [
     path('api/logout/', views.api_logout),
     path('api/register/', views.api_register),
     path('api/images/', views.api_get_user_image_urls, name='images_api'),
-    path('api/users/', views.api_get_users, name='users_api')
+    path('api/latest/', views.api_get_user_latest_image_urls, name='images_latest_api'),
+    path('api/users/', views.api_get_users, name='users_api'),
+    path('api/user/', views.api_get_user, name='user_api'),
+    path('api/change_user_values/', views.api_change_user_values, name='user_change_values_api'),
+    path('api/upload_image/', views.api_upload_image, name='upload_image_api'),
+    path('api/delete_image/', views.api_delete_image, name='delete_image_api')
 ]
 
 if settings.DEBUG:
