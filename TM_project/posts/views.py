@@ -240,7 +240,6 @@ def api_get_user(request):
     serializer = serializers.UserSerializer(objects, many=True)
     return Response({"user": serializer.data})
 
-@csrf_exempt
 @api_view(["PUT"])
 def api_change_user_values(request):
     VALID_USER_FIELDS = [f.name for f in User._meta.fields]
@@ -265,3 +264,20 @@ def get_usernames(request):
         'json', User.objects.all(), fields=('first_name', 'last_name', 'email',))
     return HttpResponse(jsondata, content_type='application/json')
 
+@csrf_exempt
+@api_view(["POST"])
+def api_activate_user(request):
+    idUser = request.data.get("userId")
+    user = User.objects.get(id = idUser)
+    user.is_active = True
+    user.save()
+    return Response(status=HTTP_200_OK)
+
+@csrf_exempt
+@api_view(["POST"])
+def api_deactivate_user(request):
+    idUser = request.data.get("userId")
+    user = User.objects.get(id = idUser)
+    user.is_active = False
+    user.save()
+    return Response(status=HTTP_200_OK)
