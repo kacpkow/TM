@@ -47,6 +47,8 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class EditorSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
+
     class Meta:
         model = Editor
         fields = "__all__"
