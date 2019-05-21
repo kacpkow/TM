@@ -16,7 +16,7 @@ def upload_location(instance, filename):
 
 
 class Upload(models.Model):
-    pic_text = models.TextField()
+    pic_text = models.TextField(blank=False)
     pic = models.ImageField(upload_to=upload_location)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     timestamp = models.TextField()
@@ -24,3 +24,10 @@ class Upload(models.Model):
     @property
     def get_absolute_url(self):
         return "{0}{1}".format(settings.MEDIA_URL, self.pic)
+
+class Editor(models.Model):
+    config = models.TextField(blank=True)
+    source = models.TextField(blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -1,10 +1,10 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from posts.forms import UploadFileForm, SignupForm
 from django.conf import settings
 from django.contrib import messages
-from posts.models import Upload
+from posts.models import Upload, Editor
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -29,6 +29,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from posts import serializers
 from rest_framework.renderers import JSONRenderer
 from django.contrib.auth.hashers import make_password
+from rest_framework.views import APIView
+from rest_framework import generics
+
 
 @csrf_exempt
 @api_view(["POST"])
@@ -37,15 +40,15 @@ def api_login(request):
     username = request.data.get("username")
     password = request.data.get("password")
     if username is None or password is None:
-        return Response({'error': 'Please provide both username and password'},
+        return Response({'message': 'Proszę podać nazwę użytkownika i hasło'},
                         status=HTTP_400_BAD_REQUEST)
     user = authenticate(username=username, password=password)
     if not user:
-        return Response({'error': 'Invalid Credentials'},
+        return Response({'message': 'Niepoprawne dane logowania'},
                         status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
     is_staff = user.is_staff
-    return Response({'token': token.key, 'is_staff': is_staff },
+    return Response({'token': token.key, 'isStaff': is_staff },
                     status=HTTP_200_OK)
 
 @csrf_exempt
@@ -88,7 +91,7 @@ def upload_file(request):
             form_data.timestamp = timezone.now()
             form_data.save()
 
-            messages.success(request, 'Obraz został pomyślnie wgrany.')
+            messages.success(request, 'Obraz został pomyślnie wgrany')
 
             return redirect('upload')
 
@@ -240,20 +243,23 @@ def api_get_user(request):
     serializer = serializers.UserSerializer(objects, many=True)
     return Response({"user": serializer.data})
 
-@api_view(["PUT"])
+@api_view(["PATCH"])
 def api_change_user_values(request):
-    VALID_USER_FIELDS = [f.name for f in User._meta.fields]
-    DEFAULTS = {
-        # you can define any defaults that you would like for the user, here
-    }
-    serialized = serializers.UserSerializer(data=request.data)
+    user = User.objects.get(id = request.user.id)
+    serialized = serializers.UserSerializer(user, data=request.data, partial=True)
+    
     if serialized.is_valid():
-        user_data = {field: data for (field, data) in request.data.items() if field in VALID_USER_FIELDS}
-        user_data.update(DEFAULTS)
-        user = User.objects.get(id = request.user.id)
         user.username = request.data.get("username")
+        user.first_name = request.data.get("first_name")
+        user.last_name = request.data.get("last_name")
         user.email = request.data.get("email")
-        user.password = make_password(request.data.get("password"), salt=None, hasher='default')
+
+        if request.data.get("password"):
+            if request.data.get("password") != request.data.get("repassword"):
+                return Response({"password": ["Hasła muszą być takie same"]}, status=HTTP_400_BAD_REQUEST)
+
+            user.password = make_password(request.data.get("password"), salt=None, hasher='default')
+
         user.save()
         return Response(serializers.UserSerializer(instance=user).data, status=HTTP_202_ACCEPTED)
     else:
@@ -281,3 +287,18 @@ def api_deactivate_user(request):
     user.is_active = False
     user.save()
     return Response(status=HTTP_200_OK)
+
+
+class EditorList(generics.ListCreateAPIView):
+    queryset = Editor.objects.all()
+    serializer_class = serializers.EditorSerializer
+
+
+class EditorDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Editor.objects.all()
+    serializer_class = serializers.EditorSerializer
+
+@csrf_exempt
+def get_image(request, id):
+    image = get_object_or_404(Editor, pk=id)
+    return HttpResponse(image.source)

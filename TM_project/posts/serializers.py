@@ -1,4 +1,4 @@
-from posts.models import Upload
+from posts.models import Upload, Editor
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -32,7 +32,7 @@ class UploadSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'is_staff', 'is_active' )
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active' )
         read_only_fields = ('id', 'is_staff', 'is_active',)
 
     def create(self, validated_data):
@@ -45,3 +45,8 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+class EditorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Editor
+        fields = "__all__"

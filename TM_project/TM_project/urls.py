@@ -44,7 +44,10 @@ urlpatterns = [
     path('api/upload_image/', views.api_upload_image, name='upload_image_api'),
     path('api/delete_image/', views.api_delete_image, name='delete_image_api'),
     path('api/activate_user/', views.api_activate_user, name='activate_user_api'),
-    path('api/deactivate_user/', views.api_deactivate_user, name='deactivate_user_api')
+    path('api/deactivate_user/', views.api_deactivate_user, name='deactivate_user_api'),
+    path('api/editor/', views.EditorList.as_view()),
+    path('api/editor/<int:pk>/', views.EditorDetail.as_view()),
+    path('image/<int:id>/', views.get_image, name='get_image'),
 ]
 
 if settings.DEBUG:

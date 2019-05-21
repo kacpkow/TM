@@ -1,5 +1,5 @@
 from django import forms
-from posts.models import Upload
+from posts.models import Upload, Editor
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
@@ -32,3 +32,11 @@ class UploadFileForm(forms.ModelForm):
     class Meta:
         model = Upload
         fields = ['pic', 'pic_text', ]
+
+
+class EditorForm(forms.ModelForm):
+    source = forms.CharField(widget=forms.Textarea)
+
+    class Meta:
+        model = Editor
+        fields = ['config', 'source', ]

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from posts.models import Upload
+from posts.models import Upload, Editor
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
@@ -24,3 +24,4 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)"""
 
 admin.site.register(Upload)
+admin.site.register(Editor)
