@@ -26,7 +26,7 @@ from rest_framework.status import (
 from rest_framework.response import Response
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-from posts import serializers
+from posts import serializers as postsSerializers
 from rest_framework.renderers import JSONRenderer
 from django.contrib.auth.hashers import make_password
 from rest_framework.views import APIView
@@ -219,34 +219,34 @@ def get_image_urls(request):
 @api_view(["GET"])
 def api_get_user_image_urls(request):
     objects = Upload.objects.select_related().filter(author_id=request.user.id)
-    serializer = serializers.UploadSerializer(objects, many=True)
+    serializer = postsSerializers.UploadSerializer(objects, many=True)
     return Response({"images": serializer.data})
 
 @csrf_exempt
 @api_view(["GET"])
 def api_get_user_latest_image_urls(request):
     objects = Upload.objects.select_related().filter(author_id=request.user.id).order_by('-id')[:3]
-    serializer = serializers.UploadSerializer(objects, many=True)
+    serializer = postsSerializers.UploadSerializer(objects, many=True)
     return Response({"images": serializer.data})
 
 @csrf_exempt
 @api_view(["GET"])
 def api_get_users(request):
     objects = User.objects.all()
-    serializer = serializers.UserSerializer(objects, many=True)
+    serializer = postsSerializers.UserSerializer(objects, many=True)
     return Response({"users": serializer.data})
 
 @csrf_exempt
 @api_view(["GET"])
 def api_get_user(request):
     objects = User.objects.select_related().filter(id = request.user.id)
-    serializer = serializers.UserSerializer(objects, many=True)
+    serializer = postsSerializers.UserSerializer(objects, many=True)
     return Response({"user": serializer.data})
 
 @api_view(["PATCH"])
 def api_change_user_values(request):
     user = User.objects.get(id = request.user.id)
-    serialized = serializers.UserSerializer(user, data=request.data, partial=True)
+    serialized = postsSerializers.UserSerializer(user, data=request.data, partial=True)
     
     if serialized.is_valid():
         user.username = request.data.get("username")
@@ -291,7 +291,7 @@ def api_deactivate_user(request):
 
 class EditorList(generics.ListCreateAPIView):
     queryset = Editor.objects.all()
-    serializer_class = serializers.EditorSerializer
+    serializer_class = postsSerializers.EditorSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -303,7 +303,7 @@ class EditorList(generics.ListCreateAPIView):
 
 class EditorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Editor.objects.all()
-    serializer_class = serializers.EditorSerializer
+    serializer_class = postsSerializers.EditorSerializer
 
 @csrf_exempt
 def get_image(request, id):
