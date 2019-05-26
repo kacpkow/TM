@@ -6,7 +6,6 @@ from django.utils import timezone
 class UploadSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(default=None)
-    # author = serializers.IntegerField(default=User.id)
     timestamp = serializers.CharField(default=timezone.now())
 
     class Meta:
@@ -32,7 +31,7 @@ class UploadSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active' )
+        fields = ('id', 'username', 'email', 'is_staff', 'is_active', 'first_name', 'last_name' )
         read_only_fields = ('id', 'is_staff', 'is_active',)
 
     def create(self, validated_data):

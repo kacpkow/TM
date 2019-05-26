@@ -22,15 +22,8 @@ from posts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('login', auth_views.LoginView.as_view(), name='login'),
-    path('logout', auth_views.LogoutView.as_view(), name='logout'),
-    path('upload/', views.upload_file, name="upload"),
-    path('delete/<int:id>', views.delete, name="delete"),
-    path('not_allowed/', views.display_not_allowed_page, name="not_allowed"),
     path('users/', views.get_usernames, name='users'),
     path('latest/', views.get_latest, name='latest'),
-    path('register/', views.register, name='register'),
     path('images/', views.get_image_urls, name='images'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/login/', views.api_login),

@@ -7,7 +7,7 @@ WORKDIR /app
 ADD . /app
 
 RUN apt-get update -y
-RUN apt-get install python3 python3-pip python3-dev python3-setuptools -y
+RUN apt-get install python3 python3-pip python3-dev python3-setuptools libffi-dev python3-cffi libcairo2 -y
 
 RUN python3 -m pip install -r requirements.txt
 RUN python3 -m pip install Pillow
