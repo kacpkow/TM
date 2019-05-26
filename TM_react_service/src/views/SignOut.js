@@ -9,7 +9,7 @@ export default ({ history }) => {
 
   useEffect(() => {
     createAlert(
-      `Wylogowano pomyślnie, trzymaj się Andrzej ${String.fromCodePoint(0x1f64c)}`,
+      `Wylogowano pomyślnie, trzymaj się${String.fromCodePoint(0x1f64c)}`,
       ALERT_VARIANTS.success
     );
 
