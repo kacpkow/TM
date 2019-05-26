@@ -1,0 +1,19 @@
+@import "../../config.scss";
+
+.header {
+  height: 80px;
+  line-height: 80px;
+  background: #fff;
+  border-bottom: 1px solid transparentize($black, 0.85);
+  box-shadow: 0 10px 10px transparentize($black, 0.98);
+
+  &__content {
+    display: flex;
+    height: 100%;
+  }
+
+  &__title {
+    margin-left: 15px;
+    font-size: 18px;
+  }
+}

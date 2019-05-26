@@ -1,0 +1,31 @@
+@import "../../config.scss";
+
+.table {
+  overflow: auto;
+  border-radius: $radius;
+  border: 1px solid transparentize($black, 0.85);
+  box-shadow: 0 10px 10px transparentize($black, 0.98);
+
+  &__content {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border-collapse: collapse;
+  }
+
+  &__head {
+    border-bottom: 1px solid transparentize($black, 0.85);
+  }
+
+  &__column {
+    padding: 10px 15px;
+  }
+
+  &__row {
+    border-bottom: 1px solid transparentize($black, 0.85);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

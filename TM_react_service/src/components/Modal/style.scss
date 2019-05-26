@@ -1,0 +1,48 @@
+@import "../../config.scss";
+
+.modal {
+  max-width: 90%;
+  min-height: 80px;
+  max-height: 90vh;
+  overflow: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: #fff;
+  border-radius: $radius;
+  transform: translate(-50%, -50%);
+  border-right: 1px solid transparentize($black, 0.85);
+  box-shadow: 10px 0 10px transparentize($black, 0.98);
+
+  &__content {
+    padding: 15px;
+    position: relative;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: $black;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 24px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &--small {
+    width: 350px;
+  }
+
+  &--medium {
+    width: 650px;
+  }
+
+  &--large {
+    width: 960px;
+  }
+}

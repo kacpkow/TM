@@ -1,0 +1,53 @@
+body {
+  overscroll-behavior: none;
+}
+
+.editor {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "tools tools"
+    "canvas sidebar";
+}
+
+.canvas {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  width: 100%;
+  min-height: 400px;
+  grid-area: canvas;
+
+  & > * {
+    user-select: none;
+  }
+
+  & > .drag {
+    cursor: grab;
+  }
+}
+
+.tools {
+  grid-area: tools;
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.shadow {
+  position: absolute;
+  pointer-events: none;
+  border: 1px dashed red;
+}
+
+.rotate-trigger {
+  width: 10px;
+  height: 10px;
+  display: block;
+  background: red;
+  border: none;
+  border-radius: 100%;
+  position: absolute;
+  padding: 0;
+}

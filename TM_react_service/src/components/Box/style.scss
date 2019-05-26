@@ -1,0 +1,9 @@
+@import "../../config.scss";
+
+.box {
+  padding: 15px;
+  background: #fff;
+  border: 1px solid darken($body, 3%);
+  box-shadow: 0 10px 10px darken($body, 2%);
+  border-radius: $radius;
+}

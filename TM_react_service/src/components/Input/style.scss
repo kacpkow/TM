@@ -1,0 +1,17 @@
+@import "../../config.scss";
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid darken($body, 10%);
+  border-radius: $radius;
+  transition: $transition;
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  &[type="color"] {
+    padding: 0;
+  }
+}

@@ -1,0 +1,48 @@
+@import "../../config.scss";
+
+.alert {
+  position: relative;
+  border-radius: $radius;
+  margin-bottom: 15px;
+  box-shadow: 0 10px 10px transparentize($black, 0.98);
+
+  &__content {
+    padding: 15px;
+    padding-right: 50px;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    color: #fff;
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 24px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &--primary {
+    background: $primary;
+    color: #fff;
+  }
+
+  &--danger {
+    background: $red;
+    color: #fff;
+  }
+
+  &--warning {
+    background: $orange;
+    color: #fff;
+  }
+
+  &--success {
+    background: $green;
+    color: #fff;
+  }
+}
