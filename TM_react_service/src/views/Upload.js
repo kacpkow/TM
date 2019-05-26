@@ -76,7 +76,7 @@ export default () => {
 
   return (
     <Loading isActive={isLoading}>
-      <Button onClick={openUploadModal}>Dodaj plik</Button>
+      <Button onClick={openUploadModal}><Icon.PlusCircle size={15} /> Dodaj plik</Button>
 
       <Separator />
 
@@ -121,7 +121,7 @@ export default () => {
 
               <Column>{format(new Date(item.createdAt), 'MM/DD/YYYY, HH:mm')}</Column>
 
-              <Column>
+              <Column style={{ minWidth: 150 }}>
                 <Button size={BUTTON_SIZES.small} onClick={() => openDeleteModal(item.id)}>
                   <Icon.Trash2 size={15} />
                 </Button>

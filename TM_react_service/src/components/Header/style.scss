@@ -16,4 +16,15 @@
     margin-left: 15px;
     font-size: 18px;
   }
+
+  &__user {
+    margin-left: auto;
+    font-size: 18px;
+
+    svg {
+      margin-left: 5px;
+      position: relative;
+      top: 2px;
+    }
+  }
 }

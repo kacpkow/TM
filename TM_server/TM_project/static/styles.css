@@ -1,0 +1,30 @@
+.alerts {
+	margin: 10px 0;
+	padding: 0;
+	width: 100%;
+}
+
+.alert-error {
+	color: #721c24;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+}
+
+.thumb {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+}
+
+.footer {
+	display: inline-block;
+	width: 100%;
+	padding: 15px 0;
+	border-top: 1px solid #ccc;
+}
+
+.content {
+	padding: 15px 0;
+	width: 100%;
+	display: inline-block;
+}

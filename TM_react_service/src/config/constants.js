@@ -24,4 +24,4 @@ export const BUTTON_SIZES = {
   big: 'big'
 };
 
-export const API_URL = 'http://127.0.0.1:8000';
+export const API_URL = 'http://104.248.138.245:8000';

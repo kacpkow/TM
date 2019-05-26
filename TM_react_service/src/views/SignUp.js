@@ -1,9 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import AlertContext from '../contexts/Alert';
 import useTitle from '../hooks/useTitle';
 import useForm from '../hooks/useForm';
 import Field from '../components/Field';
 import Button from '../components/Button';
+import Separator from '../components/Separator';
 import { ALERT_VARIANTS } from '../config/constants';
 import useApi from '../hooks/useApi';
 
@@ -47,15 +49,21 @@ export default ({ history }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Field label="Nazwa użytkownika" {...field('username')} />
-      <Field label="Imię" {...field('first_name')} />
-      <Field label="Nazwisko" {...field('last_name')} />
-      <Field label="Adres email" {...field('email')} />
-      <Field label="Hasło" type="password" {...field('password')} />
-      <Field label="Powtórz hasło" type="password" {...field('repassword')} />
+    <div className="sign-center">
+      <form className="sign-form" onSubmit={handleSubmit}>
+        <Field label="Nazwa użytkownika" {...field('username')} />
+        <Field label="Imię" {...field('first_name')} />
+        <Field label="Nazwisko" {...field('last_name')} />
+        <Field label="Adres email" {...field('email')} />
+        <Field label="Hasło" type="password" {...field('password')} />
+        <Field label="Powtórz hasło" type="password" {...field('repassword')} />
 
-      <Button type="submit">Zarejestruj się</Button>
-    </form>
+        <Button type="submit">Zarejestruj się</Button>
+
+        <Separator />
+
+        <div className="text-center">Masz już konto? Przejdź do <b><Link to="/zaloguj">logowania</Link></b></div>
+      </form>
+    </div>
   );
 };

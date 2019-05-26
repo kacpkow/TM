@@ -10,9 +10,7 @@ export default () => {
         {items.length > 0 ? (
           items.map(item => (
             <li key={item.id}>
-              <button type="button" onClick={() => setFocus(item.id)}>
-                {item.id}
-              </button>
+              <div onClick={() => setFocus(item.id)}>{item.id}</div>
 
               <button type="button" onClick={() => deleteItem(item.id)}>
                 &times;

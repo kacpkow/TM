@@ -3,7 +3,8 @@ import _ from 'lodash';
 import EditorContext from '../../contexts/Editor';
 import Field from '../Field';
 import Modal from '../Modal';
-import { MODAL_SIZES } from '../../config/constants';
+import Button from '../Button';
+import { MODAL_SIZES, BUTTON_SIZES } from '../../config/constants';
 
 export default () => {
   const {
@@ -31,6 +32,10 @@ export default () => {
           />
         ))}
       </form>
+
+      <Button size={BUTTON_SIZES.medium} onClick={() => setFocus(false)}>
+        Zamknij &times;
+      </Button>
     </Modal>
   ) : null;
 };

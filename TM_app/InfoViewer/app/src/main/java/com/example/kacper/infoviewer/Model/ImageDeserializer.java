@@ -13,19 +13,15 @@ public class ImageDeserializer implements JsonDeserializer<Image> {
     public Image deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
 
-        final JsonElement jsonPicText = jsonObject.get("pic_text");
-        final String picText = jsonPicText.getAsString();
+        final JsonElement jsonId= jsonObject.get("id");
+        final Integer id = jsonId.getAsInt();
 
-        final JsonElement jsonPic= jsonObject.get("pic");
-        final String pic= jsonPic.getAsString();
-
-        final JsonElement jsonAuthor = jsonObject.get("author");
-        final Integer author = jsonAuthor.getAsInt();
+        final JsonElement jsonAuthor= jsonObject.get("author");
+        final String author = jsonAuthor.getAsString();
 
         final Image image = new Image();
 
-        image.setPicText(picText);
-        image.setPic(pic);
+        image.setId(id);
         image.setAuthor(author);
 
         return image;

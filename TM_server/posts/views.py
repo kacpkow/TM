@@ -216,9 +216,13 @@ def api_deactivate_user(request):
 class EditorList(generics.ListCreateAPIView):
     queryset = Editor.objects.all()
     serializer_class = postSerializers.EditorSerializer
-
+        
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        author = self.request.user
+        return Editor.objects.select_related().filter(author_id = author.id)
 
 
 class EditorDetail(generics.RetrieveUpdateDestroyAPIView):

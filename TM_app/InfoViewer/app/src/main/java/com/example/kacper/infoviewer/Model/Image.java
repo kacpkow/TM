@@ -2,41 +2,31 @@ package com.example.kacper.infoviewer.Model;
 
 public class Image {
 
-    private String picText;
-    private String pic;
-    private Integer author;
+    private Integer id;
+    private String author;
 
     public Image() {
     }
 
-    public Image(String picText, String pic, Integer author) {
+    public Image(Integer id, String author) {
 
-        this.picText = picText;
-        this.pic = pic;
+        this.id = id;
         this.author = author;
     }
 
-    public String getPicText() {
-        return picText;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPicText(String picText) {
-        this.picText = picText;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getPic() {
-        return pic;
-    }
-
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
-    public Integer getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(Integer author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 }

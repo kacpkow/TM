@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import * as Icon from 'react-feather';
 import EditorContext from '../../contexts/Editor';
 import Button from '../Button';
 import Separator from '../Separator';
@@ -10,11 +11,11 @@ export default () => {
 
   return (
     <div className="tools">
-      <Button onClick={addText}>Dodaj tekst</Button>
-      <Button onClick={addRect}>Dodaj prostokąt</Button>
-      <Button onClick={addCircle}>Dodaj koło</Button>
-      <Button onClick={addImage}>Dodaj grafikę</Button>
-      <Button onClick={saveData}>Zapisz</Button>
+      <Button onClick={addText}><Icon.Type size={15} /></Button>
+      <Button onClick={addRect}><Icon.Square size={15} /></Button>
+      <Button onClick={addCircle}><Icon.Circle size={15} /></Button>
+      <Button onClick={addImage}><Icon.Image size={15} /></Button>
+      <Button onClick={saveData}><Icon.Save size={15} /> Zapisz zmiany</Button>
 
       <Separator />
     </div>

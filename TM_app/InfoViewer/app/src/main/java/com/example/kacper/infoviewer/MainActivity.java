@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.signature.ObjectKey;
 import com.example.kacper.infoviewer.Model.Image;
 import com.example.kacper.infoviewer.Model.User;
 import com.google.gson.Gson;
@@ -18,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import okhttp3.Call;
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private OkHttpClient client = new OkHttpClient();
     //private final static String portalUrl = "http://10.0.2.2:8000/";          //do potestowania na emulatorze i localhoście
-    private final static String portalUrl = "http://68.183.211.204:8000/";      //do potestowania na fizycznym urządzeniu
+    private final static String portalUrl = "http://104.248.138.245:8000/";      //do potestowania na fizycznym urządzeniu
     private List<Image> imgList;
     private List<User> usersList;
     private ImageView imageView;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         handlerLatest.post(checkLatestHandler);
         handlerSwitchImage.post(switchImage);
+
     }
 
     private Handler handlerLatest = new Handler();
@@ -118,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                             } catch (JsonSyntaxException e) {
-                                Log.e("error", "error in syntax in returning json");
+                                Log.e("error", "error in syntax in returning json1");
                             }
                         }
 
@@ -211,18 +214,19 @@ public class MainActivity extends AppCompatActivity {
             }
             RequestOptions options = new RequestOptions()
                     //.skipMemoryCache(true)
-                    .centerInside();
+                    .centerInside()
+                    .signature(new ObjectKey(currentTimestamp));
 
             if(!this.isDestroyed()){
                 Glide.with(this)
-                        .load(portalUrl+"media/" + imgList.get(currentImageIndex).getPic())
+                        .load(portalUrl+"image/" + imgList.get(currentImageIndex).getId() + "/")
                         .apply(options)
                         .into(imageView);
             }
 
-            Integer userId = imgList.get(currentImageIndex).getAuthor();
+            String authorUsername = imgList.get(currentImageIndex).getAuthor();
             for(User user:usersList){
-                if (user.getPk() == userId){
+                if (user.getFields().getUsername().equals(authorUsername)){
                     String author = user.getFields().getFirst_name() + " " + user.getFields().getLast_name();
                     authorName.setText(author);
                 }
@@ -236,5 +240,17 @@ public class MainActivity extends AppCompatActivity {
             authorNameLabel.setVisibility(View.GONE);
             authorName.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        handlerLatest.removeCallbacks(checkLatestHandler);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        handlerLatest.post(checkLatestHandler);
     }
 }

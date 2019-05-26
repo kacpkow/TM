@@ -22,6 +22,9 @@ public class UserDeserializer implements JsonDeserializer<User> {
         final JsonElement jsonField = jsonObject.get("fields");
         final JsonObject fieldsJson = jsonField.getAsJsonObject();
 
+        final JsonElement jsonUsername= fieldsJson.get("username");
+        final String username = jsonUsername.getAsString();
+
         final JsonElement jsonFirstName = fieldsJson.get("first_name");
         final String firstName = jsonFirstName.getAsString();
 
@@ -33,6 +36,7 @@ public class UserDeserializer implements JsonDeserializer<User> {
 
         final User.Fields fields = new User.Fields();
 
+        fields.setUsername(username);
         fields.setFirst_name(firstName);
         fields.setLast_name(lastName);
         fields.setEmail(email);

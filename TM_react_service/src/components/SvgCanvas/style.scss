@@ -1,14 +1,23 @@
+@import "../../config.scss";
+
 body {
   overscroll-behavior: none;
 }
 
 .editor {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  grid-template-rows: auto;
+  grid-template-columns: 1fr 30%;
   grid-template-areas:
     "tools tools"
     "canvas sidebar";
+
+  @media screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "tools tools"
+      "canvas canvas"
+      "sidebar sidebar";
+  }
 }
 
 .canvas {
@@ -33,6 +42,34 @@ body {
 
 .sidebar {
   grid-area: sidebar;
+  margin-left: 15px;
+  border: 1px solid transparentize($black, 0.85);
+  border-radius: $radius;
+  background: #fff;
+
+  @media screen and (max-width: 600px) {
+    margin-left: 0;
+    margin-top: 15px;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid transparentize($black, 0.85);
+  }
+
+  button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 20px;
+  }
 }
 
 .shadow {

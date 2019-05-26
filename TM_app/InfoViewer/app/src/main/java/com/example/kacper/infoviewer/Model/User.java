@@ -2,11 +2,21 @@ package com.example.kacper.infoviewer.Model;
 
 public class User {
     public static class Fields{
+
+        private String username;
         private String first_name;
         private String last_name;
         private String email;
 
         public Fields() {
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
         }
 
         public String getFirst_name() {

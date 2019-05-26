@@ -62,7 +62,7 @@ export default () => {
   return (
     <Loading isActive={isLoading}>
       <Button as={Link} to="edytor">
-        Dodaj grafikę
+        <Icon.PlusCircle size={15} /> Dodaj grafikę
       </Button>
 
       <Separator />
@@ -105,7 +105,7 @@ export default () => {
               <Column>{format(new Date(item.createdAt), 'MM/DD/YYYY, HH:mm')}</Column>
               <Column>{format(new Date(item.updatedAt), 'MM/DD/YYYY, HH:mm')}</Column>
 
-              <Column>
+              <Column style={{ minWidth: 150 }}>
                 <Button size={BUTTON_SIZES.small} onClick={() => openDeleteModal(item.id)}>
                   <Icon.Trash2 size={15} />
                 </Button>

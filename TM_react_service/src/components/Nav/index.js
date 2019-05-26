@@ -22,7 +22,7 @@ export default () => {
         pointerEvents: 'auto'
       }
       : {
-        left: -50,
+        left: -100,
         opacity: 0,
         pointerEvents: 'none'
       }

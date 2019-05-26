@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import AlertContext from '../contexts/Alert';
 import UserContext from '../contexts/User';
 import useTitle from '../hooks/useTitle';
 import useForm from '../hooks/useForm';
 import Field from '../components/Field';
 import Button from '../components/Button';
+import Separator from '../components/Separator';
 import { ALERT_VARIANTS } from '../config/constants';
 import useApi from '../hooks/useApi';
 
@@ -51,11 +53,17 @@ export default ({ history }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Field label="Nazwa użytkownika" {...field('username')} />
-      <Field label="Hasło" type="password" {...field('password')} />
+    <div className="sign-center">
+      <form className="sign-form" onSubmit={handleSubmit}>
+        <Field label="Nazwa użytkownika" {...field('username')} />
+        <Field label="Hasło" type="password" {...field('password')} />
 
-      <Button type="submit">Zaloguj się</Button>
-    </form>
+        <Button type="submit">Zaloguj się</Button>
+
+        <Separator />
+
+        <div className="text-center">Nie masz konta? Przejdź do <b><Link to="/zarejestruj">rejestracji</Link></b></div>
+      </form>
+    </div>
   );
 };
