@@ -67,9 +67,7 @@ export default () => {
 
       <Separator />
 
-      <ImagePreview isOpen={preview} onClose={() => setPreview(false)}>
-        {preview}
-      </ImagePreview>
+       <ImagePreview image={preview} isOpen={preview} onClose={() => setPreview(null)} />
 
       <DeleteEditorItemModal
         id={isDeleteModal}
@@ -110,7 +108,7 @@ export default () => {
                   <Icon.Trash2 size={15} />
                 </Button>
 
-                <Button size={BUTTON_SIZES.small} onClick={() => setPreview(item.source)}>
+                <Button size={BUTTON_SIZES.small} onClick={() => setPreview(item.url)}>
                   <Icon.Eye size={15} />
                 </Button>
 
