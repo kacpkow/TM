@@ -7,6 +7,13 @@ from django.db.models.signals import post_save
 from django.contrib import admin
 import unicodedata
 
+class Device(models.Model):
+    name = models.TextField(blank=False, unique = True)
+    password = models.TextField(blank=False)
+
+class DevicePermissions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, null=True)
 
 def upload_location(instance, filename):
     filebase, extension = filename.split('.')
@@ -31,3 +38,4 @@ class Editor(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    device = models.ForeignKey(Device, on_delete=models.PROTECT, null=True)

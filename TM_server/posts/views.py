@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from posts.forms import UploadFileForm, SignupForm
 from django.conf import settings
 from django.contrib import messages
-from posts.models import Upload, Editor
+from posts.models import Upload, Editor, Device, DevicePermissions
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -49,9 +49,11 @@ def api_login(request):
     if not user:
         return Response({'message': 'Niepoprawne dane logowania'},
                         status=HTTP_404_NOT_FOUND)
+    
     token, _ = Token.objects.get_or_create(user=user)
-    is_staff = user.is_staff
-    return Response({'token': token.key, 'isStaff': is_staff },
+    serializer = postSerializers.UserSerializer(user)
+
+    return Response({'token': token.key, 'user': serializer.data },
                     status=HTTP_200_OK)
 
 @csrf_exempt
@@ -107,7 +109,6 @@ def api_upload_image(request):
 @csrf_exempt
 @api_view(["DELETE"])
 def api_delete_image(request):
-    print(request.data)
     id = request.data.get("id")
     try:
         file = Upload.objects.get(pk=id)
@@ -124,7 +125,7 @@ def api_delete_image(request):
 
 
 def get_latest(request):
-    editors = Editor.objects.all()
+    editors = Editor.objects.select_related().filter(device_id=request.data.get("id"))
     if len(editors) == 0:
         return JsonResponse({'timestamp': 'null'})
 
@@ -134,6 +135,60 @@ def get_latest(request):
             temp_timestamp = editor.updated_at
     return JsonResponse({'timestamp': temp_timestamp})
 
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def create_device(request):
+    VALID_DEVICE_FIELDS = [f.name for f in Device._meta.fields]
+    serialized = postSerializers.DeviceSerializer(data=request.data)
+    if serialized.is_valid():
+        device_data = {field: data for (field, data) in request.data.items() if field in VALID_DEVICE_FIELDS}
+        device = Device.objects.create(
+            **device_data
+        )
+        device.save()
+        return Response(postSerializers.DeviceSerializer(instance=device).data, status=HTTP_201_CREATED)
+    else:
+        return Response(serialized._errors, status=HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(["POST"])
+def api_grant_device_permissions(request):
+    deviceName = request.data.get("name")
+    devicePassword = request.data.get("password")
+    deviceRepassword = request.data.get("repassword")
+    if(devicePassword != deviceRepassword):
+        return Response(status=HTTP_400_BAD_REQUEST)
+    try:
+        device = Device.objects.get(name = deviceName)
+        if(device.password == devicePassword):
+            device = Device.objects.get(name=deviceName)
+            newPermission = DevicePermissions.objects.create()
+            newPermission.device_id = device.id
+            newPermission.user_id = request.user.id
+            newPermission.save()
+            return Response(status=HTTP_200_OK)
+    except Exception as e:
+        print("Device not found")
+        return Response(status=HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(["DELETE"])
+def api_ungrant_device_permissions(request):
+    id = request.data.get("id")
+    print(request.data)
+    devicePermissions = DevicePermissions.objects.get(device_id = id, user_id = request.user.id)
+    devicePermissions.delete()
+    return Response(status=HTTP_204_NO_CONTENT)
+
+@csrf_exempt
+@api_view(["GET"])
+def api_get_granted_devices(request):
+    devicePermissions = DevicePermissions.objects.select_related().filter(user_id=request.user.id)
+    devices = Device.objects.select_related().filter(id__in=[tempDevicePermission.device_id for tempDevicePermission in devicePermissions])
+    serializer = postSerializers.DeviceSerializer(devices, many = True)
+    return JsonResponse(serializer.data, safe=False)
 
 def get_image_urls(request):
     objects = Editor.objects.all()
@@ -163,14 +218,20 @@ def api_get_users(request):
 
 @csrf_exempt
 @api_view(["GET"])
-def api_get_user(request):
-    objects = User.objects.select_related().filter(id = request.user.id)
+def api_get_user(request, pk = None):
+    if not pk:
+        pk = request.user.id
+
+    objects = User.objects.select_related().filter(id = pk)
     serializer = postSerializers.UserSerializer(objects, many=True)
     return Response({"user": serializer.data})
 
 @api_view(["PATCH"])
-def api_change_user_values(request):
-    user = User.objects.get(id = request.user.id)
+def update_user(request, pk = None):
+    if pk is None:
+        pk = request.user.id
+    
+    user = User.objects.get(id = pk)
     serialized = postSerializers.UserSerializer(user, data=request.data, partial=True)
     
     if serialized.is_valid():
