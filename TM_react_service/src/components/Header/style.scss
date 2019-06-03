@@ -1,9 +1,8 @@
-@import "../../config.scss";
+@import "../../assets/scss/config.scss";
 
 .header {
-  height: 80px;
-  line-height: 80px;
-  background: #fff;
+  height: 70px;
+  background: $white;
   border-bottom: 1px solid transparentize($black, 0.85);
   box-shadow: 0 10px 10px transparentize($black, 0.98);
 
@@ -12,19 +11,29 @@
     height: 100%;
   }
 
-  &__title {
+  &__home {
+    align-self: center;
     margin-left: 15px;
+  }
+
+  &__title {
+    align-self: center;
     font-size: 18px;
+    margin-left: 15px;
   }
 
   &__user {
     margin-left: auto;
     font-size: 18px;
+    display: flex;
+
+    a {
+      align-items: center;
+      display: flex;
+    }
 
     svg {
       margin-left: 5px;
-      position: relative;
-      top: 2px;
     }
   }
 }

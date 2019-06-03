@@ -3,7 +3,7 @@ import { useSpring, animated } from 'react-spring';
 
 import './style.scss';
 
-export default ({ isOpen = false, ...rest }) => {
+const Overlay = ({ isOpen = false, ...rest }) => {
   const style = useSpring(
     isOpen
       ? {
@@ -18,3 +18,5 @@ export default ({ isOpen = false, ...rest }) => {
 
   return <animated.div className="overlay" style={style} {...rest} />;
 };
+
+export default Overlay;

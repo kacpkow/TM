@@ -15,7 +15,8 @@ export const BUTTON_VARIANTS = {
   primary: 'primary',
   danger: 'danger',
   warning: 'warning',
-  success: 'success'
+  success: 'success',
+  gray: 'gray'
 };
 
 export const BUTTON_SIZES = {
@@ -24,4 +25,11 @@ export const BUTTON_SIZES = {
   big: 'big'
 };
 
-export const API_URL = 'http://104.248.138.245:8000';
+export const ICON_SIZE = {
+  small: 15,
+  medium: 25
+};
+
+export const DATE_FORMAT = 'MM/DD/YYYY, HH:mm';
+
+export const API_URL = process.env.REACT_APP_API_HOST || 'http://127.0.0.1:8000';

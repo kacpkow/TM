@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { useSpring, animated } from 'react-spring';
-import UserContext from '../../contexts/User';
+import { Link } from '@reach/router';
+import { useSpring, animated, config } from 'react-spring';
+import * as Icon from 'react-feather';
+import { ICON_SIZE } from '../../config/constants';
+import { useUser } from '../../contexts/User';
 import Overlay from '../Overlay';
 import Portal from '../Portal';
 
 import './style.scss';
 
-export default () => {
-  const { user } = UserContext();
+const NavLink = props => (
+  <Link
+    {...props}
+    getProps={({ isCurrent }) => ({
+      className: isCurrent ? 'active' : ''
+    })}
+  />
+);
+
+const Nav = () => {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
 
   const onToggle = () => setIsOpen(prev => !prev);
@@ -19,18 +30,24 @@ export default () => {
       ? {
         left: 0,
         opacity: 1,
-        pointerEvents: 'auto'
+        transform: 'scale(1)',
+        pointerEvents: 'auto',
+        config: config.gentle
       }
       : {
-        left: -100,
+        left: -150,
         opacity: 0,
-        pointerEvents: 'none'
+        transform: 'scale(1.05)',
+        pointerEvents: 'none',
+        config: config.gentle
       }
   );
 
   return (
     <>
-      <button type="button" className="nav-trigger" onClick={onToggle} />
+      <button type="button" className="nav-trigger" onClick={onToggle}>
+        <Icon.Menu size={ICON_SIZE.medium} />
+      </button>
 
       <Portal>
         <Overlay isOpen={isOpen} onClick={onClose} />
@@ -42,7 +59,7 @@ export default () => {
 
           <ul>
             <li>
-              <NavLink onClick={onClose} to="/" exact>
+              <NavLink onClick={onClose} to="/">
                 Główna
               </NavLink>
             </li>
@@ -55,14 +72,12 @@ export default () => {
                   </NavLink>
                 </li>
 
-                {user.isStaff && (
-                  <>
-                    <li>
-                      <NavLink onClick={onClose} to="/aktywuj">
-                        Aktywacja kont
-                      </NavLink>
-                    </li>
-                  </>
+                {user.is_staff && (
+                  <li>
+                    <NavLink onClick={onClose} to="/aktywacja">
+                      Aktywacja kont
+                    </NavLink>
+                  </li>
                 )}
 
                 <li>
@@ -72,8 +87,14 @@ export default () => {
                 </li>
 
                 <li>
-                  <NavLink onClick={onClose} to="/upload">
+                  <NavLink onClick={onClose} to="/pliki">
                     Manager plików
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink onClick={onClose} to="/tablety">
+                    Tablety
                   </NavLink>
                 </li>
 
@@ -106,3 +127,5 @@ export default () => {
     </>
   );
 };
+
+export default Nav;

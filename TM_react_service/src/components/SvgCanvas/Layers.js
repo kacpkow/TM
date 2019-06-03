@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import EditorContext from '../../contexts/Editor';
 
-export default () => {
+const Layers = () => {
   const { items, deleteItem, setFocus } = useContext(EditorContext);
 
   return (
@@ -24,3 +24,5 @@ export default () => {
     </div>
   );
 };
+
+export default Layers;

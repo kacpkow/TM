@@ -6,7 +6,7 @@ import Modal from '../Modal';
 import Button from '../Button';
 import { MODAL_SIZES, BUTTON_SIZES } from '../../config/constants';
 
-export default () => {
+const Options = () => {
   const {
     items, updateItem, focus, setFocus
   } = useContext(EditorContext);
@@ -24,6 +24,7 @@ export default () => {
       <form>
         {item.editable.map(({ label, field, type }) => (
           <Field
+            key={field}
             label={label}
             type={type}
             name={field}
@@ -39,3 +40,5 @@ export default () => {
     </Modal>
   ) : null;
 };
+
+export default Options;

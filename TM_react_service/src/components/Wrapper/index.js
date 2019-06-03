@@ -2,6 +2,8 @@ import React from 'react';
 
 import './style.scss';
 
-export default ({ className = '', ...rest }) => (
+const Wrapper = ({ className = '', ...rest }) => (
   <div className={`wrapper ${className}`} {...rest} />
 );
+
+export default Wrapper;

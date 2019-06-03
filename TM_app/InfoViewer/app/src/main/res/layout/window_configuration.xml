@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#62def8">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/popup_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:layout_centerHorizontal="true"
+                android:textSize="22sp"
+                android:text="Konfiguracja wstępna urządzenia"
+                android:textAllCaps="true"/>
+
+            <TextView
+                android:id="@+id/device_name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:textSize="22sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/popup_info"
+                android:text="Nazwa urządzenia" />
+
+            <EditText
+                android:id="@+id/device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:textSize="22sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/device_name_label"
+                android:hint="wpisz nazwę urządzenia"
+                android:editable="true"/>
+
+            <TextView
+                android:id="@+id/device_password_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:textSize="22sp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/device_name"
+                android:text="Hasło do urządzenia" />
+
+            <EditText
+                android:id="@+id/device_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:textSize="22sp"
+                android:layout_centerHorizontal="true"
+                android:inputType="textPassword"
+                android:layout_below="@id/device_password_label"
+                android:hint="wpisz hasło dostępu do urządzenia"/>
+
+            <Button
+                android:id="@+id/save_configuration_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zapisz"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/device_password"
+                android:layout_marginBottom="30dp"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

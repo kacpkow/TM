@@ -42,10 +42,10 @@ export const TEXT = {
   ]
 };
 
-export const RECT = {
+export const SQUARE = {
   as: 'rect',
   width: 50,
-  height: 80,
+  height: 50,
   params: {
     x: 0,
     y: 0,
@@ -88,7 +88,7 @@ export const RECT = {
 
 export const CIRCLE = {
   as: 'circle',
-  r: 50,
+  r: 25,
   params: {
     x: 0,
     y: 0,

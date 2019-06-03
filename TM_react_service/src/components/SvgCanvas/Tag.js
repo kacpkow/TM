@@ -1,3 +1,5 @@
-import { createElement } from 'react';
+import React from 'react';
 
-export default ({ as, children, ...rest }) => createElement(as, rest, children);
+const Tag = ({ as: Component, ...rest }) => <Component {...rest} />;
+
+export default Tag;

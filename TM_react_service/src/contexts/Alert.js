@@ -5,7 +5,7 @@ import nanoid from 'nanoid';
 
 const Alert = createContext({});
 
-export const Provider = ({ children }) => {
+export const AlertProvider = ({ children }) => {
   const [items, setItems] = useState([]);
 
   const removeExpired = () => {
@@ -18,7 +18,7 @@ export const Provider = ({ children }) => {
     }
   };
 
-  const createAlert = (value, variant = 'primary', expire = 3000) => {
+  const addAlert = (value, variant = 'primary', expire = 3000) => {
     setItems(prev => [
       ...prev,
       {
@@ -30,7 +30,7 @@ export const Provider = ({ children }) => {
     ]);
   };
 
-  const removeAlert = (id) => {
+  const deleteAlert = (id) => {
     setItems(prev => [...prev.filter(item => item.id !== id)]);
   };
 
@@ -46,8 +46,8 @@ export const Provider = ({ children }) => {
     <Alert.Provider
       value={{
         items,
-        createAlert,
-        removeAlert
+        addAlert,
+        deleteAlert
       }}
     >
       {children}
@@ -55,4 +55,4 @@ export const Provider = ({ children }) => {
   );
 };
 
-export default () => useContext(Alert);
+export const useAlert = () => useContext(Alert);

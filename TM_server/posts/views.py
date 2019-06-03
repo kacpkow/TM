@@ -123,9 +123,12 @@ def api_delete_image(request):
         post.save()
     return Response(status=HTTP_204_NO_CONTENT)
 
-
+@api_view(["POST"])
+@csrf_exempt
+@permission_classes((AllowAny,))
 def get_latest(request):
-    editors = Editor.objects.select_related().filter(device_id=request.data.get("id"))
+    id = request.data.get("id")
+    editors = Editor.objects.select_related().filter(device_id=id)
     if len(editors) == 0:
         return JsonResponse({'timestamp': 'null'})
 
@@ -190,8 +193,11 @@ def api_get_granted_devices(request):
     serializer = postSerializers.DeviceSerializer(devices, many = True)
     return JsonResponse(serializer.data, safe=False)
 
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def get_image_urls(request):
-    objects = Editor.objects.all()
+    objects = Editor.objects.select_related().filter(device_id=request.data.get("id"))
     serializer = postSerializers.EditorSerializer(objects, many=True)
     return JsonResponse(serializer.data, safe=False)
 

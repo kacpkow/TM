@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
-import SettingsContext from '../contexts/Settings';
+import { useSetting } from '../contexts/Setting';
 
-export default (title) => {
-  const { createSetting } = SettingsContext();
+const useTitle = (title) => {
+  const { addSetting } = useSetting();
 
   useEffect(() => {
     document.title = title || document.title;
 
-    createSetting('title', title);
+    addSetting('title', title);
   }, [title]);
 };
+
+export default useTitle;

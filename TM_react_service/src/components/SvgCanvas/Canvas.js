@@ -1,27 +1,16 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useGesture } from 'react-with-gesture';
 import EditorContext from '../../contexts/Editor';
-import Shadow from './Shadow';
 import Tag from './Tag';
 
-export default () => {
-  const [shadow, setShadow] = useState(null);
-  const {
-    items, updateItem, focus, setFocus
-  } = useContext(EditorContext);
+const Canvas = () => {
+  const { items, updateItem, setFocus } = useContext(EditorContext);
   const [drag, setDrag] = useState(false);
-
-  useEffect(() => {
-    if (!focus) {
-      setShadow(null);
-    }
-  }, [focus]);
 
   const bind = useGesture((e) => {
     const {
       args: [id, prevX, prevY],
       delta,
-      target,
       direction
     } = e;
 
@@ -33,27 +22,21 @@ export default () => {
     });
 
     setDrag(direction.some(item => item !== 0));
-
-    setShadow(target.getBoundingClientRect());
   });
-
-  const handleRotate = () => {
-    alert('Rotate!');
-    // Math.atan2(e.pageX - elementCenterX, -(e.pageY - elementCenterY)) * (180 / Math.PI);
-  };
 
   return (
     <>
-      {/* <Shadow coords={shadow} handleRotate={handleRotate} /> */}
-
       <Tag
         as="svg"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         className="canvas"
         width="600"
-        height="400"
+        height="450"
+        style={{ background: '#fff' }}
       >
+        <Tag as="rect" width="100%" height="100%" x="0" y="0" fill="#fff" />
+
         {items.map(({
           id, params, editable, ...rest
         }) => (
@@ -80,3 +63,5 @@ export default () => {
     </>
   );
 };
+
+export default Canvas;

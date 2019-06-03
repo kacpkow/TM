@@ -1,15 +1,24 @@
 package com.example.kacper.infoviewer;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
+import com.example.kacper.infoviewer.Model.Device;
 import com.example.kacper.infoviewer.Model.Image;
 import com.example.kacper.infoviewer.Model.User;
 import com.google.gson.Gson;
@@ -17,32 +26,52 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
     private OkHttpClient client = new OkHttpClient();
-    //private final static String portalUrl = "http://10.0.2.2:8000/";          //do potestowania na emulatorze i localhoście
-    private final static String portalUrl = "http://104.248.138.245:8000/";      //do potestowania na fizycznym urządzeniu
+    private final static String portalUrl = "http://10.0.2.2:8000/";          //do potestowania na emulatorze i localhoście
+    //private final static String portalUrl = "http://104.248.138.245:8000/";      //do potestowania na fizycznym urządzeniu
     private List<Image> imgList;
     private List<User> usersList;
     private ImageView imageView;
     private TextView authorName;
     private TextView authorNameLabel;
     private TextView infoTextView;
+    private TextView settingsTextView;
 
     private String newTimestamp = "";
     private String currentTimestamp = "";
     private Integer currentImageIndex = 0;
+
+    private Integer changeRate;
+    Boolean launchedBefore = false;
+    static boolean active = false;
+
+//    Integer deviceId = -1;
+    Integer deviceId = 2;
+
+    Request imageRequest;
+    Request latestRequest;
+    Request usersRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +81,50 @@ public class MainActivity extends AppCompatActivity {
         authorName = (TextView) findViewById(R.id.author_name_text_view);
         authorNameLabel = (TextView) findViewById(R.id.author_name_text_view_label);
         infoTextView = (TextView) findViewById(R.id.info_text_view);
+        settingsTextView = (TextView) findViewById(R.id.settingsTextView);
 
-        try {
-            loadImages();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        settingsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        handlerLatest.post(checkLatestHandler);
-        handlerSwitchImage.post(switchImage);
+    }
 
+    private void prepareRequests(){
+        Integer id = deviceId;
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("id", String.valueOf(id))
+                .build();
+
+        imageRequest = new Request.Builder()
+                .url(portalUrl + "images/")
+                .post(formBody)
+                .addHeader("content-type", "application/json")
+                .build();
+
+        latestRequest = new Request.Builder()
+                .url(portalUrl + "latest/")
+                .post(formBody)
+                .addHeader("content-type", "application/json")
+                .build();
+
+        usersRequest = new Request.Builder()
+                .url(portalUrl + "users/")
+                .build();
     }
 
     private Handler handlerLatest = new Handler();
     private Runnable checkLatestHandler = new Runnable() {
         @Override
         public void run() {
-            pingLatestUrl();
-            handlerLatest.postDelayed(this, 2000);
+            if(deviceId != -1){
+                pingLatestUrl();
+                handlerLatest.postDelayed(this, 2000);
+            }
         }
     };
 
@@ -78,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             showNextImage();
-            handlerSwitchImage.postDelayed(this, 10000);
+            handlerSwitchImage.postDelayed(this, changeRate*1000);
         }
     };
 
@@ -91,11 +146,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadImages() throws IOException {
-        Request request = new Request.Builder()
-                .url(portalUrl + "images/")
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(imageRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -132,11 +184,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void pingLatestUrl() {
-        Request request = new Request.Builder()
-                .url(portalUrl + "latest/")
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        Integer id = deviceId;
+
+        RequestBody formBody = new FormBody.Builder().add("id", String.valueOf(id)).build();
+
+        client.newCall(latestRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -149,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (jsonResponse != null) {
+                            Log.e("jsonresp", jsonResponse);
                             JsonObject jsonObject = new Gson().fromJson(jsonResponse, JsonObject.class);
                             newTimestamp = jsonObject.get("timestamp").toString();
                             try {
@@ -164,11 +218,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getUsersList(){
-        Request request = new Request.Builder()
-                .url(portalUrl + "users/")
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(usersRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -218,17 +269,23 @@ public class MainActivity extends AppCompatActivity {
                     .signature(new ObjectKey(currentTimestamp));
 
             if(!this.isDestroyed()){
-                Glide.with(this)
-                        .load(portalUrl+"image/" + imgList.get(currentImageIndex).getId() + "/")
-                        .apply(options)
-                        .into(imageView);
+                try {
+                    Glide.with(this)
+                            .load(new URL(portalUrl+"image/" + imgList.get(currentImageIndex).getId() + "/"))
+                            .apply(options)
+                            .into(imageView);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
 
             String authorUsername = imgList.get(currentImageIndex).getAuthor();
-            for(User user:usersList){
-                if (user.getFields().getUsername().equals(authorUsername)){
-                    String author = user.getFields().getFirst_name() + " " + user.getFields().getLast_name();
-                    authorName.setText(author);
+            if(usersList != null){
+                for(User user:usersList){
+                    if (user.getFields().getUsername().equals(authorUsername)){
+                        String author = user.getFields().getFirst_name() + " " + user.getFields().getLast_name();
+                        authorName.setText(author);
+                    }
                 }
             }
 
@@ -248,9 +305,130 @@ public class MainActivity extends AppCompatActivity {
         handlerLatest.removeCallbacks(checkLatestHandler);
     }
 
+    private void showConfigurationWindow(View view){
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.window_configuration, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        Button saveButton = (Button)popupView.findViewById(R.id.save_configuration_button);
+        EditText deviceName = (EditText)popupView.findViewById(R.id.device_name);
+        EditText devicePassword = (EditText)popupView.findViewById(R.id.device_password);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveWindowData(deviceName.getText().toString(), devicePassword.getText().toString());
+                popupWindow.dismiss();
+            }
+        });
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void saveWindowData(String name, String password) {
+        Device device = new Device();
+        device.setName(name);
+        device.setPassword(password);
+
+        Gson gson = new Gson();
+        MediaType mediaType = MediaType.parse("application/json");
+
+        RequestBody requestBody = RequestBody.create(mediaType, gson.toJson(device));
+
+        Request request = new Request.Builder()
+                .url(portalUrl + "device/")
+                .post(requestBody)
+                .addHeader("content-type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String jsonResponse = response.body().string();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("response", jsonResponse);
+                        if (jsonResponse != null) {
+                            if(response.code() == 201){
+                                Log.e("device added",  "successfully");
+                                try {
+                                    JSONObject jObject = new JSONObject(jsonResponse);
+                                    deviceId = jObject.getInt("id");
+                                    SharedPreferences sp = getSharedPreferences("SETTINGS", MODE_PRIVATE);
+                                    SharedPreferences.Editor spEditor = sp.edit();
+                                    spEditor.putInt("id", deviceId);
+                                    spEditor.putBoolean("LAUNCHED_BEFORE", true);
+                                    spEditor.commit();
+                                    prepareRequests();
+                                    departRequests();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     protected void onResume(){
         super.onResume();
+        SharedPreferences sp = getSharedPreferences("SETTINGS", MODE_PRIVATE);
+        changeRate = sp.getInt("CHANGE_RATE", 5);
+
+        deviceId = sp.getInt("id", -1);
+        launchedBefore = sp.getBoolean("LAUNCHED_BEFORE", false);
+
+        handlerSwitchImage.removeCallbacks(switchImage);
+        prepareRequests();
+
+        if(launchedBefore == false && active == true){
+            new Handler().postDelayed (() -> {
+                showConfigurationWindow((View)findViewById(R.id.root_view));
+            }, 1000);
+        }
+
+        if(launchedBefore == true && active == true){
+            departRequests();
+        }
+    }
+
+    private void departRequests(){
+
+        try {
+            loadImages();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        getUsersList();
+
         handlerLatest.post(checkLatestHandler);
+        handlerSwitchImage.post(switchImage);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
     }
 }

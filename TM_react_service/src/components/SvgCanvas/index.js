@@ -7,13 +7,15 @@ import Canvas from './Canvas';
 import Layers from './Layers';
 import Options from './Options';
 import {
-  TEXT, RECT, CIRCLE, IMAGE
+  TEXT, SQUARE, CIRCLE, IMAGE
 } from '../../config/elements';
-import UploadGridModal from '../../views/partials/UploadGridModal';
+import UploadGridModal from '../../screens/partials/UploadGridModal';
 
 import './style.scss';
 
-export default ({ initialValue = [], save }) => {
+const Editor = ({
+  initialValue = [], save, saving = false, afterTools: AfterTools
+}) => {
   const canvasRef = useRef(null);
   const [items, setItems] = useState(initialValue);
   const [focus, setFocus] = useState(null);
@@ -33,9 +35,9 @@ export default ({ initialValue = [], save }) => {
   };
 
   const addText = () => addItem(TEXT);
-  const addRect = () => addItem(RECT);
+  const addSquare = () => addItem(SQUARE);
   const addCircle = () => addItem(CIRCLE);
-  const addImage = () => setIsUploadModal(true); // addItem(IMAGE);
+  const addImage = () => setIsUploadModal(true);
 
   const updateItem = (id, opts) => {
     setItems(prev => prev.map((item) => {
@@ -66,19 +68,21 @@ export default ({ initialValue = [], save }) => {
         items,
         deleteItem,
         addText,
-        addRect,
+        addSquare,
         addCircle,
         addImage,
         updateItem,
         saveData,
         focus,
-        setFocus
+        setFocus,
+        saving
       }}
     >
       <UploadGridModal
         isOpen={isUploadModal}
         onClose={() => setIsUploadModal(false)}
         onSelect={(url) => {
+          setIsUploadModal(false);
           addItem({
             ...IMAGE,
             xlinkHref: url
@@ -88,6 +92,7 @@ export default ({ initialValue = [], save }) => {
 
       <div className="editor">
         <Tools />
+        <AfterTools />
         <div ref={canvasRef}>
           <Canvas />
         </div>
@@ -97,3 +102,5 @@ export default ({ initialValue = [], save }) => {
     </EditorContext.Provider>
   );
 };
+
+export default Editor;

@@ -2,6 +2,8 @@ import React from 'react';
 
 import './style.scss';
 
-export default ({ className = '', ...rest }) => (
+const Separator = ({ className = '', ...rest }) => (
   <hr className={`separator ${className}`} {...rest} />
 );
+
+export default Separator;

@@ -1,4 +1,4 @@
-@import "../../config.scss";
+@import "../../assets/scss/config.scss";
 
 body {
   overscroll-behavior: none;
@@ -9,23 +9,26 @@ body {
   grid-template-columns: 1fr 30%;
   grid-template-areas:
     "tools tools"
+    "after-tools after-tools"
     "canvas sidebar";
 
   @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
     grid-template-areas:
       "tools tools"
+      "after-tools after-tools"
       "canvas canvas"
       "sidebar sidebar";
   }
 }
 
 .canvas {
-  border: 1px solid #ccc;
+  border: 1px solid transparentize($black, 0.85);
   overflow: hidden;
   width: 100%;
   min-height: 400px;
   grid-area: canvas;
+  border-radius: $radius;
 
   & > * {
     user-select: none;
@@ -42,6 +45,7 @@ body {
 
 .sidebar {
   grid-area: sidebar;
+  align-self: flex-start;
   margin-left: 15px;
   border: 1px solid transparentize($black, 0.85);
   border-radius: $radius;
@@ -62,6 +66,16 @@ body {
     display: flex;
     padding: 10px;
     border-bottom: 1px solid transparentize($black, 0.85);
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      color: $primary;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
   button {

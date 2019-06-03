@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default () => {
+const useForm = () => {
   const [fields, setFields] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -17,7 +17,7 @@ export default () => {
     name,
     onChange,
     value: fields[name] || '',
-    error: errors[name] || false,
+    error: errors[name] || false
   });
 
   return {
@@ -27,3 +27,5 @@ export default () => {
     setErrors
   };
 };
+
+export default useForm;

@@ -4,7 +4,7 @@ import Input from '../Input';
 
 import './style.scss';
 
-export default ({ label, error, ...rest }) => {
+const Field = ({ label, error, ...rest }) => {
   const id = nanoid();
 
   return (
@@ -17,3 +17,5 @@ export default ({ label, error, ...rest }) => {
     </label>
   );
 };
+
+export default Field;

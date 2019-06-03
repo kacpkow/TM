@@ -3,7 +3,7 @@ import useLocalStorage from '../hooks/useLocalStorage';
 
 const User = createContext({});
 
-export const Provider = ({ children }) => {
+export const UserProvider = ({ children }) => {
   const [user, setUser] = useLocalStorage('user');
 
   const startSession = (data) => {
@@ -27,4 +27,4 @@ export const Provider = ({ children }) => {
   );
 };
 
-export default () => useContext(User);
+export const useUser = () => useContext(User);

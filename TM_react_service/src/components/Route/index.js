@@ -1,26 +1,21 @@
 import React from 'react';
-import { Route as RouteView, Redirect } from 'react-router-dom';
-import UserContext from '../../contexts/User';
+import { Redirect } from '@reach/router';
+import { useUser } from '../../contexts/User';
 
-export default ({
+const Route = ({
   component: Component, unauthorized, authorized, ...rest
 }) => {
-  const { user } = UserContext();
+  const { user } = useUser();
 
-  return (
-    <RouteView
-      {...rest}
-      render={(props) => {
-        if (unauthorized && user) {
-          return <Redirect to="/" />;
-        }
+  if (unauthorized && user) {
+    return <Redirect to="/" noThrow />;
+  }
 
-        if (authorized && !user) {
-          return <Redirect to="/zaloguj" />;
-        }
+  if (authorized && !user) {
+    return <Redirect to="/zaloguj" noThrow />;
+  }
 
-        return <Component {...props} />;
-      }}
-    />
-  );
+  return <Component {...rest} />;
 };
+
+export default Route;

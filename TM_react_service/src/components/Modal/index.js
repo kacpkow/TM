@@ -1,12 +1,12 @@
 import React from 'react';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated, config } from 'react-spring';
 import Portal from '../Portal';
 import Overlay from '../Overlay';
 import { MODAL_SIZES } from '../../config/constants';
 
 import './style.scss';
 
-export default ({
+const Modal = ({
   className = '',
   isOpen = false,
   size = MODAL_SIZES.medium,
@@ -19,12 +19,14 @@ export default ({
       ? {
         opacity: 1,
         pointerEvents: 'auto',
-        marginTop: 0
+        config: config.gentle,
+        transform: 'translate(-50%, -50%) translateX(0px) scale(1)'
       }
       : {
         opacity: 0,
         pointerEvents: 'none',
-        marginTop: -20
+        config: config.gentle,
+        transform: 'translate(-50%, -50%) translateY(-20px) scale(1.05)'
       }
   );
 
@@ -46,3 +48,5 @@ export default ({
     </Portal>
   );
 };
+
+export default Modal;

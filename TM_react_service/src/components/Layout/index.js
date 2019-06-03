@@ -5,7 +5,7 @@ import Notifications from '../Notifications';
 
 import './style.scss';
 
-export default ({ children }) => (
+const Layout = ({ children }) => (
   <>
     <Header />
     <Notifications />
@@ -15,3 +15,5 @@ export default ({ children }) => (
     </Wrapper>
   </>
 );
+
+export default Layout;

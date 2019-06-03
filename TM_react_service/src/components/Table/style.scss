@@ -1,10 +1,11 @@
-@import "../../config.scss";
+@import "../../assets/scss/config.scss";
 
 .table {
   overflow: auto;
   border-radius: $radius;
   border: 1px solid transparentize($black, 0.85);
   box-shadow: 0 10px 10px transparentize($black, 0.98);
+  margin-bottom: 30px;
 
   &__content {
     width: 100%;
@@ -28,5 +29,29 @@
     &:last-child {
       border-bottom: none;
     }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 30px 15px;
+    background: #fff;
+  }
+}
+
+.paginate {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    display: inline-block;
+
+    &--active {
+      font-weight: 600;
+    }
+  }
+
+  button {
+    margin-bottom: 0;
   }
 }

@@ -1,49 +1,46 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { Router } from '@reach/router';
 import * as serviceWorker from './serviceWorker';
-import { Provider as UserProvider } from './contexts/User';
-import { Provider as AlertProvider } from './contexts/Alert';
-import { Provider as SettingsProvider } from './contexts/Settings';
-import Layout from './components/Layout';
-import Route from './components/Route';
+import Providers from './Providers';
+import { Layout, Route } from './components';
+
+import Main from './screens/Main';
+import Account from './screens/Account';
+import Activation from './screens/Activation';
+import Editor from './screens/Editor';
+import Tablets from './screens/Tablets';
+import UpsertTablet from './screens/UpsertTablet';
+import Upload from './screens/Upload';
+import SignIn from './screens/SignIn';
+import SignUp from './screens/SignUp';
+import SignOut from './screens/SignOut';
+import NotFound from './screens/NotFound';
 
 import 'normalize.css';
-import './style.scss';
-
-import Main from './views/Main';
-import Account from './views/Account';
-import Activation from './views/Activation';
-import Editor from './views/Editor';
-import Upload from './views/Upload';
-import SignIn from './views/SignIn';
-import SignUp from './views/SignUp';
-import SignOut from './views/SignOut';
-import NotFound from './views/NotFound';
+import './assets/scss/style.scss';
 
 const App = () => (
-  <UserProvider>
-    <AlertProvider>
-      <SettingsProvider>
-        <BrowserRouter>
-          <Layout>
-            <Switch>
-              <Route path="/" exact component={Main} authorized />
-              <Route path="/konto" component={Account} authorized />
-              <Route path="/aktywuj" component={Activation} authorized />
-              <Route path="/edytor" exact component={Editor} authorized />
-              <Route path="/edytor/:id" component={Editor} authorized />
-              <Route path="/upload" component={Upload} authorized />
-              <Route path="/zaloguj" component={SignIn} unauthorized />
-              <Route path="/zarejestruj" component={SignUp} unauthorized />
-              <Route path="/wyloguj" component={SignOut} />
-              <Route component={NotFound} />
-            </Switch>
-          </Layout>
-        </BrowserRouter>
-      </SettingsProvider>
-    </AlertProvider>
-  </UserProvider>
+  <Providers>
+    <Layout>
+      <Router>
+        <Route path="/" component={Main} authorized />
+        <Route path="/konto" component={Account} authorized />
+        <Route path="/konto/:id" component={Account} authorized />
+        <Route path="/aktywacja" component={Activation} authorized />
+        <Route path="/edytor" component={Editor} authorized />
+        <Route path="/edytor/:id" component={Editor} authorized />
+        <Route path="/tablety" component={Tablets} authorized />
+        <Route path="/tablety/dodaj" component={UpsertTablet} authorized />
+        <Route path="/tablety/:id" component={UpsertTablet} authorized />
+        <Route path="/pliki" component={Upload} authorized />
+        <Route path="/zaloguj" component={SignIn} unauthorized />
+        <Route path="/zarejestruj" component={SignUp} unauthorized />
+        <SignOut path="/wyloguj" />
+        <NotFound default />
+      </Router>
+    </Layout>
+  </Providers>
 );
 
 render(<App />, document.getElementById('root'));

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default (key, initialValue = false) => {
+const useLocalStorage = (key, initialValue = false) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const item = localStorage.getItem(key);
@@ -25,3 +25,5 @@ export default (key, initialValue = false) => {
 
   return [storedValue, setValue];
 };
+
+export default useLocalStorage;

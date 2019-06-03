@@ -3,14 +3,8 @@ import { ALERT_VARIANTS } from '../../config/constants';
 
 import './style.scss';
 
-export default ({
-  className = '',
-  variant = ALERT_VARIANTS.primary,
-  children,
-  onClose,
-  ...rest
-}) => (
-  <div className={`alert alert--${variant} ${className}`} {...rest}>
+const Alert = ({ variant = ALERT_VARIANTS.primary, children, onClose }) => (
+  <div className={`alert alert--${variant}`}>
     <div className="alert__content">{children}</div>
 
     {onClose && (
@@ -20,3 +14,5 @@ export default ({
     )}
   </div>
 );
+
+export default Alert;
