@@ -36,6 +36,8 @@ import os
 import time
 
 
+timestamp1 = None
+
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
@@ -131,12 +133,19 @@ def get_latest(request):
     editors = Editor.objects.select_related().filter(device_id=id)
     if len(editors) == 0:
         return JsonResponse({'timestamp': 'null'})
-
-    temp_timestamp = editors[0].updated_at
-    for editor in editors:
-        if editor.updated_at > temp_timestamp:
-            temp_timestamp = editor.updated_at
-    return JsonResponse({'timestamp': temp_timestamp})
+    global timestamp1
+    if timestamp1 is None:
+        temp_timestamp = editors[0].updated_at
+        for editor in editors:
+            if editor.updated_at > temp_timestamp:
+                temp_timestamp = editor.updated_at
+        return JsonResponse({'timestamp': temp_timestamp})
+    else:
+        timestamp2 = timestamp1
+        timestamp1 = None
+        print("returning agfter delete")
+        return JsonResponse({'timestamp': timestamp2})
+    
 
 
 @csrf_exempt
@@ -295,6 +304,18 @@ class EditorList(generics.ListCreateAPIView):
 class EditorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Editor.objects.all()
     serializer_class = postSerializers.EditorSerializer
+
+    def delete(self, request, pk):
+        editor1 = Editor.objects.get(id = pk)
+        editor1.delete()
+        # editors = Editor.objects.all()
+        # if len(editors) != 0:
+        #     editor = editors.last()
+        #     editor.timestamp = timezone.now()
+        #     editor.save()
+        global timestamp1
+        timestamp1 = timezone.now()
+        return Response(status=HTTP_204_NO_CONTENT) 
 
 @csrf_exempt
 def get_image(request, id):

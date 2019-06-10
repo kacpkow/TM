@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import okhttp3.Call;
@@ -49,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     private OkHttpClient client = new OkHttpClient();
     private final static String portalUrl = "http://10.0.2.2:8000/";          //do potestowania na emulatorze i localhoście
-    //private final static String portalUrl = "http://104.248.138.245:8000/";      //do potestowania na fizycznym urządzeniu
-    private List<Image> imgList;
+//    private final static String portalUrl = "http://157.158.168.154:8000/";      //do potestowania na fizycznym urządzeniu
+    private List<Image> imgList = new ArrayList<>();
     private List<User> usersList;
     private ImageView imageView;
     private TextView authorName;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     Request imageRequest;
     Request latestRequest;
     Request usersRequest;
+    Boolean imageViewVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,9 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void compareTimestamps() throws IOException {
         if(!currentTimestamp.equals(newTimestamp)){
+            Log.e("timestamps", "are not same");
             loadImages();
             getUsersList();
             currentTimestamp = newTimestamp;
+        }
+        else{
+            Log.e("timestamps", "are same");
         }
     }
 
@@ -169,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                                 List<Image> readFromJson = objGson.fromJson(jsonResponse, listType);
                                 if (readFromJson != null) {
                                     Image[] imgArray = gson.fromJson(jsonResponse, Image[].class);
-                                    imgList = Arrays.asList(imgArray);
+                                    imgList.addAll(Arrays.asList(imgArray));
                                 }
 
                             } catch (JsonSyntaxException e) {
@@ -184,11 +190,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void pingLatestUrl() {
-
-        Integer id = deviceId;
-
-        RequestBody formBody = new FormBody.Builder().add("id", String.valueOf(id)).build();
-
         client.newCall(latestRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -196,19 +197,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                final String jsonResponse = response.body().string();
+            public void onResponse(Call call, final Response response){
+                String jsonResponse = null;
+                try {
+                    jsonResponse = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    if(imageViewVisible == true){
+                        disableImageView();
+                    }
+                }
+                String finalJsonResponse = jsonResponse;
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (jsonResponse != null) {
-                            Log.e("jsonresp", jsonResponse);
-                            JsonObject jsonObject = new Gson().fromJson(jsonResponse, JsonObject.class);
+                        if (finalJsonResponse != null) {
+                            Log.d("jsonresp", finalJsonResponse);
+                            JsonObject jsonObject = new Gson().fromJson(finalJsonResponse, JsonObject.class);
                             newTimestamp = jsonObject.get("timestamp").toString();
-                            try {
-                                compareTimestamps();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            String ts = jsonObject.get("timestamp").toString();
+                            if(!ts.equals("\"null\"")){
+                                try {
+                                    if(imageViewVisible == false){
+                                        enableImageView();
+                                    }
+                                    compareTimestamps();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else{
+                                imgList.clear();
+                                disableImageView();
                             }
                         }
                     }
@@ -292,10 +312,7 @@ public class MainActivity extends AppCompatActivity {
             currentImageIndex ++;
         }
         else{
-            infoTextView.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
-            authorNameLabel.setVisibility(View.GONE);
-            authorName.setVisibility(View.GONE);
+            disableImageView();
         }
     }
 
@@ -303,6 +320,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         handlerLatest.removeCallbacks(checkLatestHandler);
+    }
+
+    private void disableImageView(){
+        infoTextView.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.GONE);
+        authorNameLabel.setVisibility(View.GONE);
+        authorName.setVisibility(View.GONE);
+        imageViewVisible = false;
+    }
+
+    private void enableImageView(){
+        infoTextView.setVisibility(View.GONE);
+        imageView.setVisibility(View.VISIBLE);
+        authorNameLabel.setVisibility(View.VISIBLE);
+        authorName.setVisibility(View.VISIBLE);
+        imageViewVisible = true;
     }
 
     private void showConfigurationWindow(View view){

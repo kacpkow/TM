@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:textSize="20sp"
-        android:text="Brak obrazów w serwisie"
+        android:text="Brak obrazów w serwisie lub błąd połączenia"
         android:layout_gravity="center"
         android:layout_weight="0.9"
         android:gravity="center" />
